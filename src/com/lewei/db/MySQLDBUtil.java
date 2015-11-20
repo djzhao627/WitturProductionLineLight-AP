@@ -2,9 +2,9 @@ package com.lewei.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 
 public class MySQLDBUtil {
 	
@@ -18,26 +18,51 @@ public class MySQLDBUtil {
 	
 	private static final String PASSWORD = "";
 	
-	private static Connection conn = null;
-
-	static {
-		// 1.加载驱动（反射机制）
-				try {
-					Class.forName("com.mysql.jdbc.Driver");
-					// 2.获得数据库连接
-					conn = DriverManager.getConnection(URL, USER, PASSWORD);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-	}
+	private Connection conn = null;
 	
-	public static Connection getConn() {
+	DBPool dbp = null;
+
+//	static {
+//		// 1.加载驱动（反射机制）
+//				try {
+//					Class.forName("com.mysql.jdbc.Driver");
+//					// 2.获得数据库连接
+//					conn = DriverManager.getConnection(URL, USER, PASSWORD);
+//					
+//					if(conn == null){
+//						System.out.println("the conn is closed!");
+//					}
+//				} catch (ClassNotFoundException e) {
+//					System.out.println("sorry,can't find the Driver!");
+//					e.printStackTrace();
+//				} catch (SQLException e) {
+//					System.out.println(conn);
+//					e.printStackTrace();
+//				}
+//	}
+	
+	
+	public Connection getConn() {
+		if(conn == null){
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				conn = DriverManager.getConnection(URL, USER, PASSWORD);
+			} catch (SQLException | ClassNotFoundException e) {
+				if (conn == null) {
+					Thread.sleep(10000);
+					System.out.println("Stop time : " + new Date());
+					this.getConn();
+					System.out.println("conn :" + conn);
+				}
+				e.printStackTrace();
+			}finally{
+				return conn;
+			}
+		}
 		return conn;
 	}
 	
-	public static void main(String[] args) throws Exception {
+	public void main(String[] args) throws Exception {
 
 		// 3.通过数据库的连接操作数据库（增删改查）
 		Statement statement = conn.createStatement();
