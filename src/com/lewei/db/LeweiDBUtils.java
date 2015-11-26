@@ -14,7 +14,7 @@ public class LeweiDBUtils {
 
 	private static final String PASSWORD = "888888";
 
-	private Connection conn = null;
+	private static Connection conn = null;
 
 	public Connection getConn() {
 		if (conn == null) {
@@ -22,9 +22,8 @@ public class LeweiDBUtils {
 				Class.forName("com.mysql.jdbc.Driver");
 				conn = DriverManager.getConnection(URL, USER, PASSWORD);
 			} catch (SQLException | ClassNotFoundException e) {
-					Thread.sleep(60000);
 					System.out.println("leweiDB Stop time : " + new Date());
-					this.getConn();
+//					this.getConn();
 					System.out.println("conn :" + conn);
 				e.printStackTrace();
 			} finally {
@@ -34,14 +33,14 @@ public class LeweiDBUtils {
 		return conn;
 	}
 
-	public void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
+		System.out.println("-----------");
 
 		Connection connection = new LeweiDBUtils().getConn();
 		Statement statement = connection.createStatement();
 		
-		System.out.println("-----------");
 		// 3.通过数据库的连接操作数据库（增删改查）
-		System.out.println(conn + "----");
+		System.out.println(connection + "----");
 		// 4.通过查询返回结果
 		// ResultSet rs = statement.executeQuery("select * from user");
 		// // 5.循环去除 rs 中的结果

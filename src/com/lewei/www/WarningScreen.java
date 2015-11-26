@@ -441,8 +441,8 @@ public class WarningScreen extends JFrame {
 		updateWork.execute();
 
 		// 上传预警信息到乐维服务器
-		SwingWorker uploadInfo = uploadWarningInfoToLewei();
-		uploadInfo.execute();
+		// SwingWorker uploadInfo = uploadWarningInfoToLewei();
+		// uploadInfo.execute();
 
 		// 短信邮件发送
 		SwingWorker sendInfo = sendWarningInfo();
@@ -913,7 +913,7 @@ public class WarningScreen extends JFrame {
 			protected String doInBackground() throws Exception {
 				wld = new WarningLightDao();
 				while (true) {
-					if (taktCount > 0) {
+					if (rangerNum >= 0) {
 						// if (rangerNum == 0) {
 						// realCount = wld.getRealNum_zao();
 						// } else if (rangerNum == 1) {
@@ -1488,7 +1488,7 @@ public class WarningScreen extends JFrame {
 					// 当前工位存入当前产线
 					wld.insertWorkStation(TPLineID, string.split(";")[1]);
 					// 预警消息存入数据库
-					wld.addWarningInfo(remark);
+					wld.addWarningInfo(remark, 1);// 数字表示当前线别ID
 				} catch (SQLException e) {
 					System.out.println("插入预警信息出错！");
 					e.printStackTrace();
@@ -1577,20 +1577,26 @@ public class WarningScreen extends JFrame {
 				// 实例化串口发短信
 				ComputeSmsData sms = new ComputeSmsData();
 				SerialToGsm stg = new SerialToGsm("COM1");
-				// 实例化javaMail对象
-				SendMail sm = new SendMail();
 				while (true) {
 					if (taktNum >= 1) {
 						wInfo = wld.getWarningInfo();
 						if (wInfo != null) {
+							int lineID = wInfo.getLineID();
 							System.out.println("begin send!");
 							/** 发送短信 */
 							// 获取收信号码
 							phoneNumberList = wld.getPhoneNumber();
 							// 循环list，发送短信
 							for (String p : phoneNumberList) {
-								System.out.println("phoneNumber：" + p);
-								stg.sendSms(p, wInfo.getContent());
+								int id = Integer.parseInt(p.split("!!")[1]);
+								if (id != -1 || id != lineID) {
+									continue;
+								}
+								System.out.println("phoneNumber："
+										+ p.split("!!")[0]);
+								// 发送
+								stg.sendSms(p.split("!!")[0],
+										wInfo.getContent());
 								Thread.sleep(5000);
 							}
 							System.out.println("end message!");
@@ -1598,8 +1604,17 @@ public class WarningScreen extends JFrame {
 							// 获取收件箱地址
 							emailList = wld.getEmailAddress();
 							for (String e : emailList) {
-								System.out.println("emailAddress：" + e);
-								sm.sendWarningEmail(e, wInfo.getContent());
+								int id = Integer.parseInt(e.split("!!")[1]);
+								if (id != -1 || id != lineID) {
+									continue;
+								}
+								// 实例化javaMail对象
+								SendMail sm = new SendMail();
+								System.out.println("emailAddress："
+										+ e.split("!!")[0]);
+								// 发送
+								sm.sendWarningEmail(e.split("!!")[0],
+										wInfo.getContent());
 								Thread.sleep(7000);
 							}
 							System.out.println("end mail!");

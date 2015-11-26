@@ -16,6 +16,9 @@ public class WarningInfo {
 
 	/** 预警内容 */
 	private String Content;
+	
+	/** 产线ID，-1表示所有线别 */
+	private int LineID;
 
 	/** 状态标识（默认1） */
 	private int Status;
@@ -48,6 +51,20 @@ public class WarningInfo {
 	 */
 	public void setContent(String content) {
 		Content = content;
+	}
+
+	/**
+	 * @return the lineID
+	 */
+	public int getLineID() {
+		return LineID;
+	}
+
+	/**
+	 * @param lineID the lineID to set
+	 */
+	public void setLineID(int lineID) {
+		LineID = lineID;
 	}
 
 	/**

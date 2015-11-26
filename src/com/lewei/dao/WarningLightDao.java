@@ -373,7 +373,7 @@ public class WarningLightDao {
 	public int getRealNumWithTime(String begin, String start, String end)
 			throws SQLException {
 		int num = 0;
-		Connection connection = OracleUtils.getConnection();
+		Connection connection = new OracleUtils().getConnection();
 		Statement statement = connection.createStatement();
 		ResultSet rs = null;
 
@@ -441,7 +441,7 @@ public class WarningLightDao {
 	 */
 	public int getRealNum_zao() throws SQLException {
 		int num = 0;
-		Connection connection = OracleUtils.getConnection();
+		Connection connection = new OracleUtils().getConnection();
 		Statement statement = connection.createStatement();
 		Date date = new Date();
 		Calendar c = new GregorianCalendar();
@@ -501,7 +501,7 @@ public class WarningLightDao {
 	 */
 	public int getRealNum_zhong() throws SQLException {
 		int num = 0;
-		Connection connection = OracleUtils.getConnection();
+		Connection connection = new OracleUtils().getConnection();
 		Statement statement = connection.createStatement();
 		Date date = new Date();
 		Calendar c = new GregorianCalendar();
@@ -544,7 +544,7 @@ public class WarningLightDao {
 	 */
 	public int getRealNum_wan() throws SQLException {
 		int num = 0;
-		Connection connection = OracleUtils.getConnection();
+		Connection connection = new OracleUtils().getConnection();
 		Statement statement = connection.createStatement();
 		Date date = new Date();
 		Calendar c = new GregorianCalendar();
@@ -691,13 +691,13 @@ public class WarningLightDao {
 	 * @return int
 	 * @throws SQLException
 	 */
-	public int addWarningInfo(String remark) throws SQLException {
+	public int addWarningInfo(String remark, int lineID) throws SQLException {
 		int row = 0;
 		Connection conn = new MySQLDBUtil().getConn();
 		Statement statement = conn.createStatement();
 		row = statement
-				.executeUpdate("INSERT INTO warninginfo (Content) VALUES ('"
-						+ remark + "')");
+				.executeUpdate("INSERT INTO warninginfo (Content, LineID) VALUES ('"
+						+ remark + "', " + lineID + ")");
 		statement.close();
 		conn.close();
 		return row;
@@ -714,11 +714,12 @@ public class WarningLightDao {
 		Connection conn = new MySQLDBUtil().getConn();
 		Statement statement = conn.createStatement();
 		ResultSet rs = statement
-				.executeQuery("SELECT InfoID,Content FROM warninginfo WHERE Status = 1 ORDER BY InfoID DESC LIMIT 1");
+				.executeQuery("SELECT InfoID,Content, LineID FROM warninginfo WHERE Status = 1 ORDER BY InfoID DESC LIMIT 1");
 		while (rs.next()) {
 			info = new WarningInfo();
 			info.setInfoID(rs.getInt(1));
 			info.setContent(rs.getString(2));
+			info.setLineID(rs.getInt(3));
 		}
 		rs.close();
 		statement.close();
@@ -727,7 +728,8 @@ public class WarningLightDao {
 	}
 
 	/**
-	 * 获取收信号码。
+	 * 获取收信号码和线别ID，<br>
+	 * 通过“!!”来分割。
 	 * 
 	 * @return List<String>
 	 * @throws SQLException
@@ -737,9 +739,9 @@ public class WarningLightDao {
 		Connection conn = new MySQLDBUtil().getConn();
 		Statement statement = conn.createStatement();
 		ResultSet rs = statement
-				.executeQuery("SELECT MesNumber FROM message WHERE Status = 1");
+				.executeQuery("SELECT MesNumber, LineID FROM message WHERE Status = 1");
 		while (rs.next()) {
-			numberList.add(rs.getString(1));
+			numberList.add(rs.getString(1) + "!!" + rs.getString(2));// !!作为分隔符使用
 		}
 		rs.close();
 		statement.close();
@@ -748,7 +750,8 @@ public class WarningLightDao {
 	}
 
 	/**
-	 * 获取收件邮箱地址。
+	 * 获取收件邮箱地址和线别ID，<br>
+	 * 通过“!!”来分割。
 	 * 
 	 * @return List<String>
 	 * @throws SQLException
@@ -758,9 +761,9 @@ public class WarningLightDao {
 		Connection conn = new MySQLDBUtil().getConn();
 		Statement statement = conn.createStatement();
 		ResultSet rs = statement
-				.executeQuery("SELECT Email FROM email WHERE Status = 1");
+				.executeQuery("SELECT Email, LineID FROM email WHERE Status = 1");
 		while (rs.next()) {
-			emailList.add(rs.getString(1));
+			emailList.add(rs.getString(1) + "!!" + rs.getInt(2));
 		}
 		rs.close();
 		statement.close();
