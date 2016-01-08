@@ -12,8 +12,7 @@ public class MySQLDBUtil {
 	private static final String URL = "jdbc:mysql://172.21.2.216:3306/warning_light";
 
 	// ±¾»ú
-	// private static final String URL =
-	// "jdbc:mysql://127.0.0.1:3306/warning_light";
+	// private static final String URL = "jdbc:mysql://127.0.0.1:3306/warning_light";
 
 	private static final String USER = "root";
 

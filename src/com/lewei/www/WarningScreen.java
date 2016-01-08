@@ -55,6 +55,7 @@ public class WarningScreen extends JFrame {
 	private SimpleDateFormat df_Hm = new SimpleDateFormat("HH:mm");
 	private SimpleDateFormat df_Hms = new SimpleDateFormat("HH:mm:ss");
 	private SimpleDateFormat df_ymr = new SimpleDateFormat("yyyy-MM-dd");
+	private SimpleDateFormat df_ymrHms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	/** 上班时间 */
 	private static String startTime = null;
@@ -650,7 +651,7 @@ public class WarningScreen extends JFrame {
 
 						// 时间到，停线，当前数据存入数据库
 						if ((df_Hm.format(new Date())).equals(endTime)) {
-							System.out.println("time up !");
+							System.out.println("time up ! " + df_ymrHms.format(new Date()));
 
 							wld = new WarningLightDao();
 							try {
@@ -1511,7 +1512,7 @@ public class WarningScreen extends JFrame {
 				wld = new WarningLightDao();
 				TPPlan plan;
 				while (true) {
-					if (rangerNum >= 0) {
+					if (rangerNum >= 0 && !getData) {
 						plan = new TPPlan();
 						// 获取新插入的信息
 						plan = wld.getUpdateWork(rangerNum);
@@ -1589,7 +1590,7 @@ public class WarningScreen extends JFrame {
 						// 循环list，发送短信
 						for (String p : phoneNumberList) {
 							int id = Integer.parseInt(p.split("!!")[1]);
-							if (id != -1 || id != lineID) {
+							if (id != -1 && id != lineID) {
 								continue;
 							}
 							System.out.println("phoneNumber："
@@ -1604,7 +1605,7 @@ public class WarningScreen extends JFrame {
 						emailList = wld.getEmailAddress();
 						for (String e : emailList) {
 							int id = Integer.parseInt(e.split("!!")[1]);
-							if (id != -1 || id != lineID) {
+							if (id != -1 && id != lineID) {
 								continue;
 							}
 							// 实例化javaMail对象
